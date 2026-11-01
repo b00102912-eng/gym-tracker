@@ -67,12 +67,13 @@ h2 { margin: 0; font-size: 1.0625rem; font-weight: 600; line-height: 1.25; min-w
 .switch button[aria-pressed="true"] { background: var(--surface); color: var(--fg); }
 
 .sets { display: grid; gap: 6px; }
-.row { display: grid; grid-template-columns: 26px minmax(0, 1fr) 14px minmax(0, 1fr) 36px; align-items: center; gap: 6px; }
+.row { display: grid; grid-template-columns: 26px minmax(0, 1fr) 92px 36px; align-items: center; gap: 6px; }
 .row.labels { color: var(--muted); font-size: .8125rem; }
 .num { color: var(--muted); font-size: .9375rem; font-variant-numeric: tabular-nums; }
 .row input { width: 100%; height: 46px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: 1.125rem; font-weight: 500; font-variant-numeric: tabular-nums; }
 .row input::placeholder { color: var(--muted); font-weight: 400; opacity: .65; }
-.times { color: var(--muted); text-align: center; }
+.done { height: 46px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--muted); font-weight: 600; }
+.done[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .drop { width: 36px; height: 46px; padding: 0; border: 0; background: none; color: var(--muted); font-size: 1.25rem; line-height: 1; }
 
 .text-btn { justify-self: start; min-height: 40px; padding: 4px 0; border: 0; background: none; color: var(--accent); font-weight: 600; }
@@ -98,43 +99,50 @@ h2 { margin: 0; font-size: 1.0625rem; font-weight: 600; line-height: 1.25; min-w
 function ex(id, name, weight, unit, note) {
   return { id: id, name: name, variants: [{ id: 'main', name: name, w: weight, u: unit, note: note }] };
 }
+function bodyweight(id, name) {
+  var e = ex(id, name, '', 'kg');
+  e.variants[0].bodyweight = true;
+  return e;
+}
 function either(id, name, alternate, variants) {
   return { id: id, name: name, alternate: alternate, variants: variants };
 }
 
 var DAYS = [
   { key: 'mon', short: 'Mon', full: 'Monday', title: 'Push', tab: 'Push', exercises: [
-    ex('chest-press', 'Hammer Strength chest press', '90', 'kg'),
+    ex('chest-press', 'Hammer Strength chest press', '95', 'kg'),
     ex('incline-fly', 'Machine incline fly', '30', 'kg'),
-    ex('lateral-raise', 'Single-arm lateral raise', '35', 'kg'),
+    ex('lateral-raise', 'Single-arm lateral raise', '40', 'kg'),
     ex('panatta-press', 'Panatta shoulder press', '100', 'kg'),
     ex('pushdown', 'Tricep pushdown', '45', 'kg'),
-    ex('french-press', 'French press (triceps)', '40', 'kg')
+    ex('french-press', 'French press (triceps)', '35', 'kg')
   ] },
-  { key: 'tue', short: 'Tue', full: 'Tuesday', title: 'Pull', tab: 'Pull', exercises: [] },
+  { key: 'tue', short: 'Tue', full: 'Tuesday', title: 'Pull', tab: 'Pull', exercises: [
+    bodyweight('pull-ups', 'Pull-ups'),
+    ex('lat-pulldown', 'Lat pulldown', '180', 'lb'),
+    ex('rows', 'Rows', '80', 'kg'),
+    ex('preacher', 'Preacher curl', '65', 'kg'),
+    ex('behind-back', 'Behind-the-back cable curl', '30', 'kg'),
+    ex('rear-delts', 'Rear delts', '5', 'kg', 'each side, 10 kg total')
+  ] },
   { key: 'wed', short: 'Wed', full: 'Wednesday', title: 'Legs', tab: 'Legs', exercises: [
+    ex('rdl', 'RDL machine', '80', 'kg'),
     either('press-squat', 'Leg press or hack squat', true, [
       { id: 'leg-press', name: 'Leg press', w: '180', u: 'kg' },
       { id: 'hack-squat', name: 'Hack squat', w: '60', u: 'kg' }
     ]),
-    ex('rdl', 'RDL machine', '60', 'kg'),
-    ex('extensions', 'Leg extensions', '220', 'lb', 'about 100 kg'),
-    either('curl', 'Leg curl', false, [
-      { id: 'single', name: 'Single leg', w: '35', u: 'kg' },
-      { id: 'lying', name: 'Lying', w: '160', u: 'lb', note: 'about 73 kg' }
-    ]),
-    either('add-abd', 'Adductors or abductors', true, [
-      { id: 'adductors', name: 'Adductors', w: '160', u: 'lb', note: 'about 73 kg' },
-      { id: 'abductors', name: 'Abductors', w: '160', u: 'lb', note: 'about 73 kg' }
-    ])
+    ex('extensions', 'Leg extensions', '250', 'lb')
   ] },
   { key: 'thu', short: 'Thu', full: 'Thursday', title: 'Rest', tab: 'Rest', rest: true, exercises: [] },
   { key: 'fri', short: 'Fri', full: 'Friday', title: 'Chest / Back', tab: 'Chest', exercises: [
-    ex('incline-bench', 'Incline bench press (black machine)', '105', 'kg'),
-    ex('low-rows', 'Low lat rows', '80', 'kg'),
-    ex('chest-fly', 'Hammer Strength chest fly', '75', 'kg'),
-    ex('pulldown', 'Lat pulldown', '80', 'kg'),
-    ex('gymleco', 'Gymleco chest press', '80', 'kg')
+    ex('panatta-chest', 'Panatta chest press', '120', 'kg'),
+    ex('fly', 'Chest fly', '200', 'lb'),
+    ex('hammer-chest', 'Hammer Strength chest press', '90', 'kg'),
+    bodyweight('pull-ups', 'Pull-ups'),
+    either('row', 'T-bar row or high row', false, [
+      { id: 't-bar', name: 'T-bar row', w: '', u: 'kg' },
+      { id: 'high', name: 'High row', w: '', u: 'kg' }
+    ])
   ] },
   { key: 'sat', short: 'Sat', full: 'Saturday', title: 'Arms / Shoulders', tab: 'Arms', exercises: [
     ex('preacher', 'Preacher curl', '50', 'kg'),
@@ -148,7 +156,7 @@ var DAYS = [
 ];
 
 var STORE_KEY = 'gym-tracker-v1';
-var DEFAULT_SETS = 3;
+var DEFAULT_SETS = 2;
 var store = { custom: {}, log: {} };
 var storageOk = true;
 var armedRemove = null;
@@ -194,12 +202,14 @@ function session(dayKey, create) {
   }
   return store.log[today][dayKey];
 }
-function logged(rows) { return (rows || []).filter(function (r) { return r.r !== ''; }); }
+// Sets logged before reps were dropped have a reps value and no done flag.
+function isDone(row) { return !!row.done || (row.r !== undefined && row.r !== ''); }
+function logged(rows) { return (rows || []).filter(isDone); }
 function pastDates() {
   return Object.keys(store.log).filter(function (d) { return d < today; }).sort().reverse();
 }
 
-// Most recent earlier session where this exercise has at least one set with reps.
+// Most recent earlier session where this exercise has at least one finished set.
 function lastSession(dayKey, key) {
   var dates = pastDates();
   for (var i = 0; i < dates.length; i++) {
@@ -239,16 +249,19 @@ function defaultWeight(variant, last, index) {
 function rowsFor(dayKey, key, variant, last) {
   var rows = session(dayKey).rows[key];
   if (rows) return rows;
-  var count = last ? last.rows.length : DEFAULT_SETS;
+  var count = last ? Math.max(last.rows.length, DEFAULT_SETS) : DEFAULT_SETS;
   var out = [];
-  for (var i = 0; i < count; i++) out.push({ w: defaultWeight(variant, last, i), r: '' });
+  for (var i = 0; i < count; i++) out.push({ w: defaultWeight(variant, last, i), done: false });
   return out;
 }
 
 function lastLine(variant, last) {
   if (last) {
-    var parts = last.rows.map(function (r) { return (r.w === '' ? '–' : r.w) + ' × ' + r.r; });
-    return 'Last, ' + esc(prettyDate(last.date)) + ': <strong>' + parts.join(', ') + '</strong> ' + esc(variant.u);
+    var noWeights = last.rows.every(function (r) { return r.w === ''; });
+    var done = noWeights
+      ? '<strong>' + last.rows.length + (last.rows.length === 1 ? ' set' : ' sets') + '</strong>'
+      : '<strong>' + last.rows.map(function (r) { return r.w === '' ? '–' : esc(r.w); }).join(', ') + '</strong> ' + esc(variant.u);
+    return 'Last, ' + esc(prettyDate(last.date)) + ': ' + done;
   }
   if (variant.w) return 'No session logged yet. Working weight: <strong>' + esc(variant.w) + ' ' + esc(variant.u) + '</strong>';
   return 'No session logged yet.';
@@ -276,15 +289,13 @@ function exerciseHtml(day, exercise) {
     html += '</div>';
   }
   html += '<p class="last">' + lastLine(variant, last) + '</p>';
-  html += '<div class="sets"><div class="row labels" aria-hidden="true"><span>Set</span><span>' + esc(variant.u) + '</span><span></span><span>Reps</span><span></span></div>';
+  html += '<div class="sets"><div class="row labels" aria-hidden="true"><span>Set</span><span>' + esc(variant.u) + '</span><span></span><span></span></div>';
   rows.forEach(function (row, i) {
-    var prev = last && last.rows[i];
     var label = esc(exercise.name) + ', set ' + (i + 1);
     var id = esc(day.key + '-' + key + '-' + i);
     html += '<div class="row" data-index="' + i + '"><span class="num">' + (i + 1) + '</span>' +
-      '<input id="w-' + id + '" data-field="w" type="text" inputmode="decimal" autocomplete="off" aria-label="' + label + ' weight in ' + esc(variant.u) + '" value="' + esc(row.w) + '">' +
-      '<span class="times" aria-hidden="true">×</span>' +
-      '<input id="r-' + id + '" data-field="r" type="text" inputmode="numeric" autocomplete="off" aria-label="' + label + ' reps" placeholder="' + (prev ? esc(prev.r) : '') + '" value="' + esc(row.r) + '">' +
+      '<input id="w-' + id + '" data-field="w" type="text" inputmode="decimal" autocomplete="off" aria-label="' + label + ' weight in ' + esc(variant.u) + '" placeholder="' + (variant.bodyweight ? 'Bodyweight' : '') + '" value="' + esc(row.w) + '">' +
+      '<button type="button" class="done" data-action="done" aria-label="' + label + ' done" aria-pressed="' + isDone(row) + '">' + (isDone(row) ? '✓ Done' : 'Done') + '</button>' +
       '<button type="button" class="drop" data-action="drop-set" aria-label="Remove set ' + (i + 1) + '">×</button></div>';
   });
   html += '</div><button type="button" class="text-btn" data-action="add-set">Add set</button></section>';
@@ -330,7 +341,7 @@ function render() {
     if (!list.length) html += '<p class="empty">No exercises saved for ' + esc(day.title) + ' yet. Add your first one below.</p>';
     html += list.map(function (e) { return exerciseHtml(day, e); }).join('');
     html += addFormHtml();
-    html += '<p class="foot">Sets save as you type, in this browser only. A set counts once it has reps.</p>';
+    html += '<p class="foot">Sets save as you type, in this browser only. A set counts once you tap Done.</p>';
   }
   document.getElementById('main').innerHTML = html;
 }
@@ -359,13 +370,12 @@ document.getElementById('week').addEventListener('click', function (e) {
 var mainEl = document.getElementById('main');
 
 mainEl.addEventListener('input', function (e) {
-  var field = e.target.getAttribute('data-field');
-  if (!field) return;
-  var clean = field === 'w' ? e.target.value.replace(/,/g, '.').replace(/[^0-9.]/g, '') : e.target.value.replace(/[^0-9]/g, '');
+  if (e.target.getAttribute('data-field') !== 'w') return;
+  var clean = e.target.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
   if (clean !== e.target.value) e.target.value = clean;
   var section = e.target.closest('.exercise');
   var index = +e.target.closest('.row').getAttribute('data-index');
-  currentRows(section)[index][field] = clean;
+  currentRows(section)[index].w = clean;
   persist();
 });
 
@@ -387,12 +397,16 @@ mainEl.addEventListener('click', function (e) {
   }
   if (action === 'variant') {
     session(view, true).pick[section.getAttribute('data-ex')] = b.getAttribute('data-variant');
+  } else if (action === 'done') {
+    var doneRow = currentRows(section)[+b.closest('.row').getAttribute('data-index')];
+    doneRow.done = !isDone(doneRow);
+    doneRow.r = '';
   } else if (action === 'add-set') {
     var rows = currentRows(section);
     var exercise = findExercise(dayOf(view), section.getAttribute('data-ex'));
     var variant = currentVariant(view, exercise);
     var weight = rows.length ? rows[rows.length - 1].w : defaultWeight(variant, lastSession(view, section.getAttribute('data-key')), 0);
-    rows.push({ w: weight, r: '' });
+    rows.push({ w: weight, done: false });
   } else if (action === 'drop-set') {
     currentRows(section).splice(+b.closest('.row').getAttribute('data-index'), 1);
   } else if (action === 'remove-ex') {
